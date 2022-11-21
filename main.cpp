@@ -17,10 +17,6 @@ constexpr auto TT6297_ADDRESS_DATA_SECTION_END = 0xFFF + 1;
 constexpr auto MSM6295_ADDRESS_DATA_SECTION_START = 0x8;
 constexpr auto MSM6295_ADDRESS_DATA_SECTION_END = 0x3FF + 1;
 
-constexpr auto TT6297_SPEECH_DATA_SECTION_START = 0xFF1 + 1;
-constexpr auto MSM6295_SPEECH_DATA_SECTION_START = 0x3FF + 1;
-
-
 constexpr auto TT6297_MAX_SOUNDS = 511;
 constexpr auto MSM6295_MAX_SOUNDS = 127;
 
@@ -64,8 +60,6 @@ int main(int argc, char* argv[])
 
     std::uint32_t chip_type = std::atoi(argv[3]);
     std::string output_folder = argv[4];
-
-    std::cout << chip_type << std::endl;
 
     if(chip_type != ChipType::TT6297 && chip_type != ChipType::MSM6295)
     {
