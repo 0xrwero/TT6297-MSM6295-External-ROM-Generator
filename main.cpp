@@ -1,3 +1,4 @@
+// SOFTWARE PRODUCED BY 0xRWERO
 #include <iostream>
 #include <fstream>
 #include <memory>
