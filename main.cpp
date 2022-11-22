@@ -81,9 +81,9 @@ int main(int argc, char* argv[])
 
         return -1;
     }
-    const std::uint32_t external_rom_size = std::atoi(argv[2]) * 1024 * 1024;
+    const double external_rom_size = std::atof(argv[2]) * 1024 * 1024;
 
-    if(input_files_size > external_rom_size)
+    if(input_files_size > static_cast<std::uint32_t>(external_rom_size))
     {
         std::cout << "FAILURE: The specified input folder exceeds the memory capacity of the specified external ROM" << std::endl;
 
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
     }
     const auto output_bin_size = file.tellp();
 
-    const auto padding_size = external_rom_size - output_bin_size;
+    const auto padding_size = static_cast<std::uint32_t>(external_rom_size) - output_bin_size;
 
     const auto padded_buffer = std::make_unique<std::uint8_t[]>(padding_size);
 
@@ -162,5 +162,5 @@ int main(int argc, char* argv[])
 
     file.write(reinterpret_cast<const char*>(padded_buffer.get()), padding_size);
 
-    std::cout << "sound rom has been successfully created (size: " << external_rom_size << "" << " bytes)" << std::endl;
+    std::cout << "sound rom has been successfully created (size: " << static_cast<std::uint32_t>(external_rom_size) << "" << " bytes)" << std::endl;
 }
