@@ -110,6 +110,8 @@ int main(int argc, char* argv[])
     std::uint32_t current_address_data_section_address = TT6297_ADDRESS_DATA_SECTION_START; // Same for both chips.
 
     std::vector<std::pair<std::filesystem::path, std::uintmax_t>> paths;
+    
+    paths.reserve(sound_amount)
 
     // Iterate through all input binary files.
     for(const auto& it : std::filesystem::directory_iterator{argv[1]})
