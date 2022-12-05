@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 
     std::vector<std::pair<std::filesystem::path, std::uintmax_t>> paths;
     
-    paths.reserve(sound_amount)
+    paths.reserve(sound_amount);
 
     // Iterate through all input binary files.
     for(const auto& it : std::filesystem::directory_iterator{argv[1]})
