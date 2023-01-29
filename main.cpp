@@ -9,17 +9,17 @@
 #include <string.h>
 #include <string>
 
-static constexpr std::uint32_t TT6297_ADPCM_SPEECH_DATA_SECTION_MAX_SIZE = 16 * 1024 * 1024; // in bytes
-static constexpr std::uint32_t MSM6295_ADPCM_SPEECH_DATA_SECTION_MAX_SIZE = 0.25 * 1024 * 1024; // in bytes
+constexpr std::uint32_t TT6297_ADPCM_SPEECH_DATA_SECTION_MAX_SIZE = 16 * 1024 * 1024; // in bytes
+constexpr std::uint32_t MSM6295_ADPCM_SPEECH_DATA_SECTION_MAX_SIZE = 0.25 * 1024 * 1024; // in bytes
 
-static constexpr std::uint8_t TT6297_ADDRESS_DATA_SECTION_START = 0x8; // First start address memory position for the external rom interfaced by the TT6297
-static constexpr std::uint16_t TT6297_ADDRESS_DATA_SECTION_END = 0xFFF;
+constexpr std::uint8_t TT6297_ADDRESS_DATA_SECTION_START = 0x8; // First start address memory position for the external rom interfaced by the TT6297
+constexpr std::uint16_t TT6297_ADDRESS_DATA_SECTION_END = 0xFFF;
 
-static constexpr std::uint8_t MSM6295_ADDRESS_DATA_SECTION_START = 0x8;
-static constexpr std::uint16_t MSM6295_ADDRESS_DATA_SECTION_END = 0x3FF;
+constexpr std::uint8_t MSM6295_ADDRESS_DATA_SECTION_START = 0x8;
+constexpr std::uint16_t MSM6295_ADDRESS_DATA_SECTION_END = 0x3FF;
 
-static constexpr std::uint16_t TT6297_MAX_SOUNDS = 511;
-static constexpr std::uint8_t MSM6295_MAX_SOUNDS = 127;
+constexpr std::uint16_t TT6297_MAX_SOUNDS = 511;
+constexpr std::uint8_t MSM6295_MAX_SOUNDS = 127;
 
 enum ChipType
 {
