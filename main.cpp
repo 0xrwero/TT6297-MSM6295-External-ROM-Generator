@@ -5,20 +5,21 @@
 #include <filesystem>
 #include <fstream>
 #include <utility>
+#include <array>
 #include <string.h>
 #include <string>
 
-constexpr auto TT6297_ADPCM_SPEECH_DATA_SECTION_MAX_SIZE = 16 * 1024 * 1024; // in bytes
-constexpr auto MSM6295_ADPCM_SPEECH_DATA_SECTION_MAX_SIZE = 0.25 * 1024 * 1024; // in bytes
+static constexpr std::uint32_t TT6297_ADPCM_SPEECH_DATA_SECTION_MAX_SIZE = 16 * 1024 * 1024; // in bytes
+static constexpr std::uint32_t MSM6295_ADPCM_SPEECH_DATA_SECTION_MAX_SIZE = 0.25 * 1024 * 1024; // in bytes
 
-constexpr auto TT6297_ADDRESS_DATA_SECTION_START = 0x8; // First start address memory position for the external rom interfaced by the TT6297
-constexpr auto TT6297_ADDRESS_DATA_SECTION_END = 0xFFF + 1;
+static constexpr std::uint8_t TT6297_ADDRESS_DATA_SECTION_START = 0x8; // First start address memory position for the external rom interfaced by the TT6297
+static constexpr std::uint16_t TT6297_ADDRESS_DATA_SECTION_END = 0xFFF;
 
-constexpr auto MSM6295_ADDRESS_DATA_SECTION_START = 0x8;
-constexpr auto MSM6295_ADDRESS_DATA_SECTION_END = 0x3FF + 1;
+static constexpr std::uint8_t MSM6295_ADDRESS_DATA_SECTION_START = 0x8;
+static constexpr std::uint16_t MSM6295_ADDRESS_DATA_SECTION_END = 0x3FF;
 
-constexpr auto TT6297_MAX_SOUNDS = 511;
-constexpr auto MSM6295_MAX_SOUNDS = 127;
+static constexpr std::uint16_t TT6297_MAX_SOUNDS = 511;
+static constexpr std::uint8_t MSM6295_MAX_SOUNDS = 127;
 
 enum ChipType
 {
@@ -28,6 +29,9 @@ enum ChipType
 
 std::array<std::uint8_t, 6u> construct_sa_ea_addresses(std::uint32_t start_address, std::uint32_t end_address)
 {
+    /*
+    * Required for endian friendlyness.
+    */
     std::array<std::uint8_t, 6u> sa_ea {};
 
     sa_ea[0] = (start_address >> 16);
@@ -103,9 +107,9 @@ int main(int argc, char* argv[])
     // Build data address section Oh-FFFh
     std::ofstream file { output_folder + "\\output.bin",  std::ofstream ::binary };
 
-    const auto address_section_buffer = std::make_unique<std::uint8_t[]>((chip_type == ChipType::TT6297) ? TT6297_ADDRESS_DATA_SECTION_END : MSM6295_ADDRESS_DATA_SECTION_END);
+    const auto address_section_buffer = std::make_unique<std::uint8_t[]>((chip_type == ChipType::TT6297) ? TT6297_ADDRESS_DATA_SECTION_END : MSM6295_ADDRESS_DATA_SECTION_END + 1);
 
-    file.write(reinterpret_cast<const char*>(address_section_buffer.get()), (chip_type == ChipType::TT6297) ? TT6297_ADDRESS_DATA_SECTION_END : MSM6295_ADDRESS_DATA_SECTION_END);
+    file.write(reinterpret_cast<const char*>(address_section_buffer.get()), (chip_type == ChipType::TT6297) ? TT6297_ADDRESS_DATA_SECTION_END : MSM6295_ADDRESS_DATA_SECTION_END + 1);
 
     std::uint32_t current_address_data_section_address = TT6297_ADDRESS_DATA_SECTION_START; // Same for both chips.
 
@@ -117,7 +121,7 @@ int main(int argc, char* argv[])
     for(const auto& it : std::filesystem::directory_iterator{argv[1]})
     {
         // Store each file contents into process memory.
-        paths.push_back(std::make_pair(it.path(), it.file_size()));
+        paths.emplace_back(it.path(), it.file_size());
 
     }
 
@@ -130,7 +134,7 @@ int main(int argc, char* argv[])
 
         std::ifstream inputs(it.first, std::ifstream::binary);
 
-        const auto file_start_address = file.tellp();
+        const std::uint32_t file_start_address = file.tellp();
 
         auto buffer = std::make_unique<std::uint8_t[]>(it.second);
 
@@ -146,7 +150,7 @@ int main(int argc, char* argv[])
         const auto sa_ea_arr = construct_sa_ea_addresses(file_start_address, file_end_address);
 
         // Write six bytes containing start and end address to output binary file.
-        file.write(reinterpret_cast<const char*>(sa_ea_arr.begin()), sa_ea_arr.size());
+        file.write(reinterpret_cast<const char*>(sa_ea_arr.data()), sa_ea_arr.size());
 
         // Shift 8 bytes forward in memory so that we can write another sa-ea.
         current_address_data_section_address += sizeof(std::uint64_t);
@@ -160,7 +164,7 @@ int main(int argc, char* argv[])
 
     const auto padded_buffer = std::make_unique<std::uint8_t[]>(padding_size);
 
-    memset(padded_buffer.get(), 0xFF, padding_size);
+    std::memset(padded_buffer.get(), 0xFF, padding_size);
 
     file.write(reinterpret_cast<const char*>(padded_buffer.get()), padding_size);
 
